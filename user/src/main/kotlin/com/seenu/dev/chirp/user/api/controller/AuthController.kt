@@ -1,5 +1,7 @@
 package com.seenu.dev.chirp.user.api.controller
 
+import com.seenu.dev.chirp.user.api.dto.AuthenticatedUserDto
+import com.seenu.dev.chirp.user.api.dto.LoginRequest
 import com.seenu.dev.chirp.user.api.dto.RegistrationRequest
 import com.seenu.dev.chirp.user.api.dto.UserDto
 import com.seenu.dev.chirp.user.api.mapper.toDto
@@ -20,6 +22,16 @@ class AuthController constructor(
     fun register(@Valid @RequestBody body: RegistrationRequest): UserDto {
         return authService.register(
             userName = body.userName,
+            email = body.email,
+            password = body.password
+        ).toDto()
+    }
+
+    @PostMapping("/login")
+    fun login(
+        @RequestBody body: LoginRequest
+    ): AuthenticatedUserDto {
+        return authService.login(
             email = body.email,
             password = body.password
         ).toDto()

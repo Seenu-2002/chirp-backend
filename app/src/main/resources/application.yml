@@ -3,7 +3,7 @@ spring:
     name: chirp-backend
 
   datasource:
-    url: jdbc:postgresql://db.sdculjyqrenklkdnelib.supabase.co:5432/postgres
+    url: jdbc:postgresql://db.lbixaegdfkacbzkcvskp.supabase.co:5432/postgres
     username: postgres
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -31,8 +31,15 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+        hbm2ddl:
+          create_namespaces: true
 
   logging:
     level:
       com.fasterxml.jackson: DEBUG
       com.fasterxml.jackson.databind.deser: TRACE
+
+
+jwt:
+  secret: ${JWT_SECRET_BASE64}
+  expiration-minutes: 15
