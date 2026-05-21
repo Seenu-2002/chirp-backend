@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class ChirpBackendApplication
 
 fun main(args: Array<String>) {
-	runApplication<ChirpBackendApplication>(*args)
+    runApplication<ChirpBackendApplication>(*args)
 }
