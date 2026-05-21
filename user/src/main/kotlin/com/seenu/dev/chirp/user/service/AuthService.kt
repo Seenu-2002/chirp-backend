@@ -1,5 +1,6 @@
 package com.seenu.dev.chirp.user.service
 
+import com.seenu.dev.chirp.user.domain.exceptions.EmailNotVerifiedException
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidCredentialException
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
 import com.seenu.dev.chirp.user.domain.exceptions.UserAlreadyExistException
@@ -13,10 +14,9 @@ import com.seenu.dev.chirp.user.infra.database.repository.RefreshTokenRepository
 import com.seenu.dev.chirp.user.infra.database.repository.UserRepository
 import com.seenu.dev.chirp.user.infra.mapper.toDomain
 import com.seenu.dev.chirp.user.infra.security.PasswordEncoder
-import jakarta.transaction.Transactional
-import jdk.internal.joptsimple.internal.Messages.message
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.security.MessageDigest
 import java.time.Instant
 import java.util.Base64
@@ -26,26 +26,32 @@ class AuthService constructor(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtService: JwtService,
-    private val refreshTokenRepository: RefreshTokenRepository
+    private val refreshTokenRepository: RefreshTokenRepository,
+    private val emailVerificationService: EmailVerificationService
 ) {
 
     fun register(userName: String, email: String, password: String): User {
+        val trimmedEmail = email.trim()
         val existingUser = userRepository.findByEmailOrUserName(
             userName = userName,
-            email = email,
+            email = trimmedEmail,
         )
 
         if (existingUser != null) {
             throw UserAlreadyExistException()
         }
 
-        return userRepository.save(
+        val savedUser = userRepository.saveAndFlush(
             UserEntity(
                 userName = userName,
-                email = email,
+                email = trimmedEmail,
                 hashedPassword = passwordEncoder.encode(password),
             )
         ).toDomain()
+
+        val token = emailVerificationService.createVerificationToken(trimmedEmail)
+
+        return savedUser
     }
 
     fun login(
@@ -61,7 +67,7 @@ class AuthService constructor(
         }
 
         if (!user.hasEmailVerified) {
-            // TODO: Email verification
+            throw EmailNotVerifiedException()
         }
 
         return user.id?.let { userId ->

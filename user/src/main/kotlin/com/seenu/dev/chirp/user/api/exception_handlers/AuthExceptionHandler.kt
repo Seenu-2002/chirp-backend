@@ -1,5 +1,6 @@
 package com.seenu.dev.chirp.user.api.exception_handlers
 
+import com.seenu.dev.chirp.user.domain.exceptions.EmailNotVerifiedException
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidCredentialException
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
 import com.seenu.dev.chirp.user.domain.exceptions.UserAlreadyExistException
@@ -61,6 +62,15 @@ class AuthExceptionHandler {
     fun onInvalidCredentials(exp: InvalidCredentialException): Map<String, String?> {
         return mapOf(
             "code" to "INVALID_CREDENTIALS",
+            "message" to exp.message
+        )
+    }
+
+    @ExceptionHandler(EmailNotVerifiedException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun onEmailNotVerified(exp: EmailNotVerifiedException): Map<String, String?> {
+        return mapOf(
+            "code" to "EMAIL_NOT_VERIFIED",
             "message" to exp.message
         )
     }
