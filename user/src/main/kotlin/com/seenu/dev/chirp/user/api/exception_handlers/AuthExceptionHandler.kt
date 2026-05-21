@@ -3,6 +3,7 @@ package com.seenu.dev.chirp.user.api.exception_handlers
 import com.seenu.dev.chirp.user.domain.exceptions.EmailNotVerifiedException
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidCredentialException
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
+import com.seenu.dev.chirp.user.domain.exceptions.SamePasswordException
 import com.seenu.dev.chirp.user.domain.exceptions.UserAlreadyExistException
 import com.seenu.dev.chirp.user.domain.exceptions.UserNotFoundException
 import org.springframework.http.HttpStatus
@@ -71,6 +72,14 @@ class AuthExceptionHandler {
     fun onEmailNotVerified(exp: EmailNotVerifiedException): Map<String, String?> {
         return mapOf(
             "code" to "EMAIL_NOT_VERIFIED",
+            "message" to exp.message
+        )
+    }
+    @ExceptionHandler(SamePasswordException::class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    fun onSamePassword(exp: SamePasswordException): Map<String, String?> {
+        return mapOf(
+            "code" to "SAME_PASSWORD",
             "message" to exp.message
         )
     }

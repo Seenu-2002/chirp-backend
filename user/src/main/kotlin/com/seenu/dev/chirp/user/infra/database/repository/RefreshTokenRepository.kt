@@ -10,6 +10,6 @@ interface RefreshTokenRepository : JpaRepository<RefreshTokenEntity, Long> {
 
     fun deleteByUserIdAndHashedToken(userId: UserId, hashedToken: String)
 
-    fun deleteByUserId(userId: String)
+    fun deleteByUserId(userId: UserId)
 
 }
