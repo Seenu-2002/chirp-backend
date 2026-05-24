@@ -1,6 +1,6 @@
 package com.seenu.dev.chirp.user.infra.database.entity
 
-import com.seenu.dev.chirp.user.domain.model.UserId
+import com.seenu.dev.chirp.domain.type.UserId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

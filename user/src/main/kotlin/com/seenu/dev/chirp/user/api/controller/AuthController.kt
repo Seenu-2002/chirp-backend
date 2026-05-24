@@ -11,14 +11,11 @@ import com.seenu.dev.chirp.user.api.dto.ResetPasswordRequest
 import com.seenu.dev.chirp.user.api.dto.UserDto
 import com.seenu.dev.chirp.user.api.mapper.toDto
 import com.seenu.dev.chirp.user.api.util.requestUserId
-import com.seenu.dev.chirp.user.domain.model.UserId
 import com.seenu.dev.chirp.user.infra.rate_limiting.EmailRateLimiter
 import com.seenu.dev.chirp.user.service.AuthService
 import com.seenu.dev.chirp.user.service.EmailVerificationService
 import com.seenu.dev.chirp.user.service.PasswordResetService
-import io.lettuce.core.KillArgs.Builder.user
 import jakarta.validation.Valid
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -26,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.temporal.ChronoUnit
-import java.util.concurrent.TimeUnit
 
 @RestController
 @RequestMapping("/api/auth")

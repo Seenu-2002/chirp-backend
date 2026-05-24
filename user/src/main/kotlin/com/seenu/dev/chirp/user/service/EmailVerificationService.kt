@@ -1,5 +1,7 @@
 package com.seenu.dev.chirp.user.service
 
+import com.seenu.dev.chirp.domain.events.user.UserEvent
+import com.seenu.dev.chirp.infra.message_queue.EventPublisher
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
 import com.seenu.dev.chirp.user.domain.exceptions.UserNotFoundException
 import com.seenu.dev.chirp.user.domain.model.EmailVerificationToken
@@ -18,7 +20,9 @@ import java.time.temporal.ChronoUnit
 class EmailVerificationService constructor(
     private val emailVerificationTokenRepository: EmailVerificationTokenRepository,
     private val userRepository: UserRepository,
-    @param:Value("\${chirp.email.verification.expiry-hours}") private val expiryHours: Long
+    @param:Value("\${chirp.email.verification.expiry-hours}")
+    private val expiryHours: Long,
+    private val eventPublisher: EventPublisher
 ) {
 
     @Transactional
@@ -61,8 +65,22 @@ class EmailVerificationService constructor(
         )
     }
 
+    @Transactional
     fun resendVerificationEmail(email: String) {
-        // TODO: Trigger resend
+        val token = createVerificationToken(email)
+        val user = token.user
+        if (user.hasEmailVerified) {
+            return
+        }
+
+        eventPublisher.publish(
+            event = UserEvent.RequestResendVerification(
+                username = user.userName,
+                email = user.email,
+                userId = user.id,
+                verificationToken = token.token
+            )
+        )
     }
 
     @Scheduled(cron = "0 0 3 * * *")

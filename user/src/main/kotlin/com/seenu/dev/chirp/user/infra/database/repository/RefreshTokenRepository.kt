@@ -1,6 +1,6 @@
 package com.seenu.dev.chirp.user.infra.database.repository
 
-import com.seenu.dev.chirp.user.domain.model.UserId
+import com.seenu.dev.chirp.domain.type.UserId
 import com.seenu.dev.chirp.user.infra.database.entity.RefreshTokenEntity
 import org.springframework.data.jpa.repository.JpaRepository
 

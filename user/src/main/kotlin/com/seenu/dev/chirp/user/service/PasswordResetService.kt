@@ -4,7 +4,7 @@ import com.seenu.dev.chirp.user.domain.exceptions.InvalidCredentialException
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
 import com.seenu.dev.chirp.user.domain.exceptions.SamePasswordException
 import com.seenu.dev.chirp.user.domain.exceptions.UserNotFoundException
-import com.seenu.dev.chirp.user.domain.model.UserId
+import com.seenu.dev.chirp.domain.type.UserId
 import com.seenu.dev.chirp.user.infra.database.entity.PasswordResetTokenEntity
 import com.seenu.dev.chirp.user.infra.database.repository.PasswordResetTokenRepository
 import com.seenu.dev.chirp.user.infra.database.repository.RefreshTokenRepository
