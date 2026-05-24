@@ -11,7 +11,9 @@ dependencies {
     implementation(libs.jackson.module.kotlin)
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.boot.starter.amqp)
     implementation(libs.spring.boot.starter.data.jpa)
+    implementation(libs.spring.boot.starter.data.redis)
     runtimeOnly(libs.postgresql)
 
     implementation(libs.jwt.api)

@@ -2,16 +2,28 @@ spring:
   application:
     name: chirp-backend
 
+  data:
+    redis:
+      #      host: "diaphanous-megasolid-hypersonic-50935.db.redis.io"
+      #      password: "${REDIS_PASSWORD}"
+      #      port: 12663
+      host: localhost
+      password:
+      port: 6379
+      connect-timeout: 5000
+      timeout: 2000
+
+
   datasource:
     # Supabase
-    url: jdbc:postgresql://db.lbixaegdfkacbzkcvskp.supabase.co:5432/postgres
-    username: postgres
-    password: ${POSTGRES_PASSWORD}
+    #    url: jdbc:postgresql://db.lbixaegdfkacbzkcvskp.supabase.co:5432/postgres
+    #    username: postgres
+    #    password: ${POSTGRES_PASSWORD}
 
-    # Local Postgres.app
-    # url: jdbc:postgresql://localhost:5432/chirp
-    # username: seeni-11754
-    # password:
+    #     Local Postgres.app
+    url: jdbc:postgresql://localhost:5432/chirp
+    username: seeni-11754
+    password:
     driver-class-name: org.postgresql.Driver
 
     hikari:
@@ -40,6 +52,34 @@ spring:
         hbm2ddl:
           create_namespaces: true
 
+  rabbitmq:
+#    host: warthog.lmq.cloudamqp.com
+#    password: ${RABBITMQ_PASSWORD}
+#    username: wlhbjara
+#    virtual-host: wlhbjara
+#    ssl:
+#      enabled: true
+    host: localhost
+    port: 5672
+    password: guest
+    username: guest
+    virtual-host: /
+    ssl:
+      enabled: false
+    listener:
+      simple:
+        acknowledge-mode: auto
+        concurrency: 1
+        max-concurrency: 3
+        prefetch: 10
+        default-requeue-rejected: true
+        retry:
+          enabled: true
+          initial-interval: 1000ms
+          max-interval: 10000ms
+          max-attempts: 3
+          multiplier: 2.0
+
   logging:
     level:
       com.fasterxml.jackson: DEBUG
@@ -56,3 +96,14 @@ chirp:
       expiry-hours: 24
     reset-password:
       expiry-minutes: 15
+  rate-limit:
+    ip:
+      apply-limit: true
+
+nginx:
+  trusted-ips:
+    - "127.0.0.1" # nginx on same machine
+    - "::1" # Ipv6 localhost
+    - "172.17.0.0/16" # nginx container IP when using Docker
+    - "10.0.0.5/32" # nginx server IP (if separate machine)
+  require-proxy: true

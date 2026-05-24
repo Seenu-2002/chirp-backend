@@ -3,7 +3,9 @@ package com.seenu.dev.chirp.user.api.exception_handlers
 import com.seenu.dev.chirp.user.domain.exceptions.EmailNotVerifiedException
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidCredentialException
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
+import com.seenu.dev.chirp.user.domain.exceptions.RateLimitException
 import com.seenu.dev.chirp.user.domain.exceptions.SamePasswordException
+import com.seenu.dev.chirp.user.domain.exceptions.UnauthorizedException
 import com.seenu.dev.chirp.user.domain.exceptions.UserAlreadyExistException
 import com.seenu.dev.chirp.user.domain.exceptions.UserNotFoundException
 import org.springframework.http.HttpStatus
@@ -75,11 +77,30 @@ class AuthExceptionHandler {
             "message" to exp.message
         )
     }
+
     @ExceptionHandler(SamePasswordException::class)
     @ResponseStatus(HttpStatus.CONFLICT)
     fun onSamePassword(exp: SamePasswordException): Map<String, String?> {
         return mapOf(
             "code" to "SAME_PASSWORD",
+            "message" to exp.message
+        )
+    }
+
+    @ExceptionHandler(RateLimitException::class)
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    fun onRateLimitExceeded(exp: RateLimitException): Map<String, String?> {
+        return mapOf(
+            "code" to "RATE_LIMIT_EXCEEDED",
+            "message" to exp.message
+        )
+    }
+
+    @ExceptionHandler(UnauthorizedException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun onUnauthorized(exp: UnauthorizedException): Map<String, String?> {
+        return mapOf(
+            "code" to "UNAUTHORIZED",
             "message" to exp.message
         )
     }

@@ -1,9 +1,6 @@
 package com.seenu.dev.chirp.user.domain.model
 
-import java.util.UUID
-import kotlin.uuid.ExperimentalUuidApi
-
-typealias UserId = UUID
+import com.seenu.dev.chirp.domain.type.UserId
 
 data class User constructor(
     val id: UserId,

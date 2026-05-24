@@ -1,7 +1,7 @@
 package com.seenu.dev.chirp.user.service
 
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
-import com.seenu.dev.chirp.user.domain.model.UserId
+import com.seenu.dev.chirp.domain.type.UserId
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
