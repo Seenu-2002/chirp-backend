@@ -22,7 +22,7 @@ spring:
 
     #     Local Postgres.app
     url: jdbc:postgresql://localhost:5432/chirp
-    username: seeni-11754
+    username: root
     password:
     driver-class-name: org.postgresql.Driver
 
@@ -52,13 +52,25 @@ spring:
         hbm2ddl:
           create_namespaces: true
 
+  mail:
+    host: smtp.mailgun.org
+    username: seenu@sandboxacbefbbd5040472db555f8c4484412af.mailgun.org
+    password: ${MAILGUN_PASSWORD}
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   rabbitmq:
-#    host: warthog.lmq.cloudamqp.com
-#    password: ${RABBITMQ_PASSWORD}
-#    username: wlhbjara
-#    virtual-host: wlhbjara
-#    ssl:
-#      enabled: true
+    #    host: warthog.lmq.cloudamqp.com
+    #    password: ${RABBITMQ_PASSWORD}
+    #    username: wlhbjara
+    #    virtual-host: wlhbjara
+    #    ssl:
+    #      enabled: true
     host: localhost
     port: 5672
     password: guest
