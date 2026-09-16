@@ -1,10 +1,12 @@
 package com.seenu.dev.chirp.user.service
 
+import com.seenu.dev.chirp.domain.events.user.UserEvent
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidCredentialException
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
 import com.seenu.dev.chirp.user.domain.exceptions.SamePasswordException
 import com.seenu.dev.chirp.user.domain.exceptions.UserNotFoundException
 import com.seenu.dev.chirp.domain.type.UserId
+import com.seenu.dev.chirp.infra.message_queue.EventPublisher
 import com.seenu.dev.chirp.user.infra.database.entity.PasswordResetTokenEntity
 import com.seenu.dev.chirp.user.infra.database.repository.PasswordResetTokenRepository
 import com.seenu.dev.chirp.user.infra.database.repository.RefreshTokenRepository
@@ -15,6 +17,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -23,6 +26,7 @@ class PasswordResetService constructor(
     private val userRepository: UserRepository,
     private val passwordResetTokenRepository: PasswordResetTokenRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
+    private val eventPublisher: EventPublisher,
     private val passwordEncoder: PasswordEncoder,
     @param:Value("\${chirp.email.reset-password.expiry-minutes}")
     private val expiryMinutes: Long
@@ -42,7 +46,15 @@ class PasswordResetService constructor(
 
         passwordResetTokenRepository.save(token)
 
-        // TODO: Inform notification service about reset trigger to send email
+        eventPublisher.publish(
+            event = UserEvent.RequestResetPassword(
+                userId = user.id!!,
+                email = user.email,
+                username = user.userName,
+                passwordResetToken = token.token,
+                expiryInMinutes = expiryMinutes
+            )
+        )
     }
 
     @Transactional

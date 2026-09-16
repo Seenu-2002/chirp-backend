@@ -104,6 +104,8 @@ jwt:
 
 chirp:
   email:
+    url: http://localhost:8080
+    from: mail@chirp-dev.com
     verification:
       expiry-hours: 24
     reset-password:
