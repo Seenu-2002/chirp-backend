@@ -10,7 +10,7 @@ import com.seenu.dev.chirp.user.api.dto.RegistrationRequest
 import com.seenu.dev.chirp.user.api.dto.ResetPasswordRequest
 import com.seenu.dev.chirp.user.api.dto.UserDto
 import com.seenu.dev.chirp.user.api.mapper.toDto
-import com.seenu.dev.chirp.user.api.util.requestUserId
+import com.seenu.dev.chirp.api.util.requestUserId
 import com.seenu.dev.chirp.user.infra.rate_limiting.EmailRateLimiter
 import com.seenu.dev.chirp.user.service.AuthService
 import com.seenu.dev.chirp.user.service.EmailVerificationService

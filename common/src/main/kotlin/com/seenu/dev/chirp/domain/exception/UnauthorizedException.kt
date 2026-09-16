@@ -1,3 +1,3 @@
-package com.seenu.dev.chirp.user.domain.exceptions
+package com.seenu.dev.chirp.domain.exception
 
 class UnauthorizedException : RuntimeException("Missing auth details")

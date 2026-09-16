@@ -5,7 +5,7 @@ import com.seenu.dev.chirp.user.domain.exceptions.InvalidCredentialException
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
 import com.seenu.dev.chirp.user.domain.exceptions.RateLimitException
 import com.seenu.dev.chirp.user.domain.exceptions.SamePasswordException
-import com.seenu.dev.chirp.user.domain.exceptions.UnauthorizedException
+import com.seenu.dev.chirp.domain.exception.UnauthorizedException
 import com.seenu.dev.chirp.user.domain.exceptions.UserAlreadyExistException
 import com.seenu.dev.chirp.user.domain.exceptions.UserNotFoundException
 import org.springframework.http.HttpStatus

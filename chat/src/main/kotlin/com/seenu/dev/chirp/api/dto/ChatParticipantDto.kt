@@ -1,11 +1,10 @@
-package com.seenu.dev.chirp.domain.models
+package com.seenu.dev.chirp.api.dto
 
 import com.seenu.dev.chirp.domain.type.UserId
 
-
-data class ChatParticipant constructor(
+data class ChatParticipantDto constructor(
     val userId: UserId,
     val username: String,
     val email: String,
-    val profilePicUrl: String?
+    val profilePictureUrl: String?
 )

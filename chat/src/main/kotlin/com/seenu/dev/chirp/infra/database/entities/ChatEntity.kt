@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToMany
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
+import java.time.Instant
 
 @Entity
 @Table(
@@ -22,7 +23,7 @@ import org.hibernate.annotations.CreationTimestamp
 class ChatEntity constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var chatId: ChatId? = null,
+    var id: ChatId? = null,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "creator_id",
@@ -54,5 +55,5 @@ class ChatEntity constructor(
     )
     var participants: Set<ChatParticipantEntity> = emptySet(),
     @CreationTimestamp
-    var createdAt: java.time.Instant,
+    var createdAt: Instant = Instant.now(),
 )

@@ -1,6 +1,6 @@
-package com.seenu.dev.chirp.user.api.util
+package com.seenu.dev.chirp.api.util
 
-import com.seenu.dev.chirp.user.domain.exceptions.UnauthorizedException
+import com.seenu.dev.chirp.domain.exception.UnauthorizedException
 import com.seenu.dev.chirp.domain.type.UserId
 import org.springframework.security.core.context.SecurityContextHolder
 
