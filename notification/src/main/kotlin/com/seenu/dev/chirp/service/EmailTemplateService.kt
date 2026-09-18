@@ -14,7 +14,7 @@ class EmailTemplateService constructor(
         variables: Map<String, Any> = emptyMap()
     ): String {
         val ctx = Context().apply {
-            variables.forEach { key, value ->
+            variables.forEach { (key, value) ->
                 setVariable(key, value)
             }
         }

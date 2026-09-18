@@ -40,6 +40,7 @@ class EmailVerificationService constructor(
         return emailVerificationTokenRepository.save(token).toDomain()
     }
 
+    @Transactional
     fun verifyEmail(token: String) {
         val verificationToken = emailVerificationTokenRepository.findByToken(token)
             ?: throw InvalidTokenException("Email verification token is invalid")
@@ -62,6 +63,14 @@ class EmailVerificationService constructor(
             verificationToken.user.apply {
                 this.hasEmailVerified = true
             }
+        )
+
+        eventPublisher.publish(
+            UserEvent.Verified(
+                userId = verificationToken.user.id!!,
+                email = verificationToken.user.email,
+                username = verificationToken.user.userName
+            )
         )
     }
 
