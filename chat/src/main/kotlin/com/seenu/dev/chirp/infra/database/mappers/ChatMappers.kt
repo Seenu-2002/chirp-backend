@@ -4,6 +4,7 @@ import com.seenu.dev.chirp.domain.models.Chat
 import com.seenu.dev.chirp.domain.models.ChatMessage
 import com.seenu.dev.chirp.domain.models.ChatParticipant
 import com.seenu.dev.chirp.infra.database.entities.ChatEntity
+import com.seenu.dev.chirp.infra.database.entities.ChatMessageEntity
 import com.seenu.dev.chirp.infra.database.entities.ChatParticipantEntity
 
 fun ChatEntity.toChat(lastMessage: ChatMessage? = null): Chat {
@@ -34,5 +35,14 @@ fun ChatParticipant.toChatParticipantEntity(): ChatParticipantEntity {
         username = this.username,
         email = this.email,
         profilePicUrl = this.profilePicUrl
+    )
+}
+
+fun ChatMessageEntity.toChatMessage(): ChatMessage {
+    return ChatMessage(
+        id =this.id!!,
+        chatId = this.chatId,
+        sender = sender.toChatParticipant(),
+
     )
 }
