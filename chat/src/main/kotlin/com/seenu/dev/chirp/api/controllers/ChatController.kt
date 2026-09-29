@@ -51,7 +51,7 @@ class ChatController constructor(
 
     @PostMapping("/{chatId}/add")
     fun addChatParticipants(
-        @PathVariable chatId: Int,
+        @PathVariable chatId: ChatId,
         @Valid @RequestBody body: AddParticipantToChatDto
     ): ChatDto {
         return chatService.addParticipants(
@@ -63,10 +63,10 @@ class ChatController constructor(
 
     @DeleteMapping("/{chatId}/leave")
     fun leaveChat(
-        @PathVariable chatId: Int
+        @PathVariable chatId: ChatId
     ) {
-        chatService.removeParticipant(
-            requestUserId = requestUserId,
+        chatService.removeParticipantFromChat(
+            userId = requestUserId,
             chatId = chatId
         )
     }
