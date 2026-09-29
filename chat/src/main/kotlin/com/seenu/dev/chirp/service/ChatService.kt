@@ -1,7 +1,10 @@
 package com.seenu.dev.chirp.service
 
+import com.seenu.dev.chirp.api.dto.ChatMessageDto
+import com.seenu.dev.chirp.api.mappers.toChatMessageDto
 import com.seenu.dev.chirp.domain.exception.ChatNotFoundException
 import com.seenu.dev.chirp.domain.exception.ChatParticipantNotFoundException
+import com.seenu.dev.chirp.domain.exception.ForbiddenException
 import com.seenu.dev.chirp.domain.exception.InvalidChatSizeException
 import com.seenu.dev.chirp.domain.models.Chat
 import com.seenu.dev.chirp.domain.models.ChatMessage
@@ -9,12 +12,15 @@ import com.seenu.dev.chirp.domain.type.ChatId
 import com.seenu.dev.chirp.domain.type.UserId
 import com.seenu.dev.chirp.infra.database.entities.ChatEntity
 import com.seenu.dev.chirp.infra.database.mappers.toChat
+import com.seenu.dev.chirp.infra.database.mappers.toChatMessage
 import com.seenu.dev.chirp.infra.database.repositories.ChatMessageRepository
 import com.seenu.dev.chirp.infra.database.repositories.ChatParticipantRepository
 import com.seenu.dev.chirp.infra.database.repositories.ChatRepository
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 
 @Service
 class ChatService constructor(
@@ -22,6 +28,24 @@ class ChatService constructor(
     private val chatParticipantRepository: ChatParticipantRepository,
     private val chatMessageRepository: ChatMessageRepository
 ) {
+
+    fun getChatMessage(
+        chatId: ChatId,
+        before: Instant? = null,
+        pageSize: Int
+    ): List<ChatMessageDto> {
+        return chatMessageRepository
+            .findByChatIdBefore(
+                chatId = chatId,
+                before = before ?: Instant.now(),
+                pageable = PageRequest.of(0, pageSize)
+            )
+            .content
+            .asReversed()
+            .map {
+                it.toChatMessage().toChatMessageDto()
+            }
+    }
 
     @Transactional
     fun createChat(
@@ -53,7 +77,7 @@ class ChatService constructor(
         userIds: Set<UserId>
     ): Chat {
         val chat = chatRepository.findByIdOrNull(chatId)
-            ?: throw ChatNotFoundException(chatId)
+            ?: throw ChatNotFoundException()
 
         val isRequestedUserInChat = chat.participants.any {
             it.userId == requestUserId
@@ -71,9 +95,10 @@ class ChatService constructor(
         val lastMessage = lastMessageForChat(chatId)
         val updatedChat = chatRepository.save(
             chat.apply {
-                this.participants = this.participants + users
+                this.participants += users
             }
         ).toChat(lastMessage)
+        return updatedChat
     }
 
     @Transactional
@@ -81,13 +106,13 @@ class ChatService constructor(
         chatId: ChatId,
         userId: UserId
     ) {
-       val chat = chatRepository.findByIdOrNull(chatId)
-           ?: throw ChatNotFoundException()
+        val chat = chatRepository.findByIdOrNull(chatId)
+            ?: throw ChatNotFoundException()
 
         val participant = chatParticipantRepository.findByIdOrNull(userId)
             ?: throw ChatParticipantNotFoundException(userId)
 
-        val newParticipantSize  = chat.participants.size - 1
+        val newParticipantSize = chat.participants.size - 1
         if (newParticipantSize == 0) {
             chatRepository.deleteById(chatId)
             return
@@ -95,7 +120,7 @@ class ChatService constructor(
 
         chatRepository.save(
             chat.apply {
-                this.participants = participants - participant
+                this.participants -= participant
             }
         )
     }
