@@ -2,6 +2,8 @@ package com.seenu.dev.chirp.service
 
 import com.seenu.dev.chirp.api.dto.ChatMessageDto
 import com.seenu.dev.chirp.api.mappers.toChatMessageDto
+import com.seenu.dev.chirp.domain.event.MessageDeletedEvent
+import com.seenu.dev.chirp.domain.events.chat.ChatEvent
 import com.seenu.dev.chirp.domain.exception.ChatNotFoundException
 import com.seenu.dev.chirp.domain.exception.ChatParticipantNotFoundException
 import com.seenu.dev.chirp.domain.exception.ForbiddenException
@@ -15,17 +17,22 @@ import com.seenu.dev.chirp.infra.database.mappers.toChatMessage
 import com.seenu.dev.chirp.infra.database.repositories.ChatMessageRepository
 import com.seenu.dev.chirp.infra.database.repositories.ChatParticipantRepository
 import com.seenu.dev.chirp.infra.database.repositories.ChatRepository
+import com.seenu.dev.chirp.infra.message_queue.EventPublisher
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event
 import java.time.Instant
 
 @Service
 class ChatMessageService constructor(
     private val chatRepository: ChatRepository,
     private val chatMessageRepository: ChatMessageRepository,
-    private val chatParticipantRepository: ChatParticipantRepository
+    private val chatParticipantRepository: ChatParticipantRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val eventPublisher: EventPublisher
 ) {
 
     @Transactional
@@ -41,13 +48,23 @@ class ChatMessageService constructor(
         val sender = chatParticipantRepository.findByIdOrNull(senderId)
             ?: throw ChatParticipantNotFoundException(senderId)
 
-        val savedMessage = chatMessageRepository.save(
+        val savedMessage = chatMessageRepository.saveAndFlush(
             ChatMessageEntity(
                 id = messageId,
                 content = content.trim(),
                 chatId = chatId,
                 chat = chat,
                 sender = sender
+            )
+        )
+
+        eventPublisher.publish(
+            event = ChatEvent.NewMessage(
+                senderId = sender.userId,
+                senderUsername = sender.username,
+                recipientIds = chat.participants.map { it.userId }.toSet(),
+                chatId = chatId,
+                message = savedMessage.content.trim()
             )
         )
 
@@ -67,6 +84,13 @@ class ChatMessageService constructor(
         }
 
         chatMessageRepository.delete(message)
+
+        applicationEventPublisher.publishEvent(
+            MessageDeletedEvent(
+                chatId = message.chatId,
+                messageId = messageId
+            )
+        )
     }
 
 }
