@@ -19,6 +19,7 @@ import com.seenu.dev.chirp.infra.database.mappers.toChatMessage
 import com.seenu.dev.chirp.infra.database.repositories.ChatMessageRepository
 import com.seenu.dev.chirp.infra.database.repositories.ChatParticipantRepository
 import com.seenu.dev.chirp.infra.database.repositories.ChatRepository
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -34,6 +35,12 @@ class ChatService constructor(
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
 
+    @Cacheable(
+        value = ["messages"],
+        key = "#chatId",
+        condition = "#before == null && #pageSize <= 50",
+        sync = true
+    )
     fun getChatMessage(
         chatId: ChatId,
         before: Instant? = null,

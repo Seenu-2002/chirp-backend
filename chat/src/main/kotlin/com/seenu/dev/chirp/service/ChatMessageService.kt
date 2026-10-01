@@ -18,6 +18,7 @@ import com.seenu.dev.chirp.infra.database.repositories.ChatMessageRepository
 import com.seenu.dev.chirp.infra.database.repositories.ChatParticipantRepository
 import com.seenu.dev.chirp.infra.database.repositories.ChatRepository
 import com.seenu.dev.chirp.infra.message_queue.EventPublisher
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -36,6 +37,11 @@ class ChatMessageService constructor(
 ) {
 
     @Transactional
+    @CacheEvict(
+        cacheNames = ["messages"],
+        key = "#chatId",
+
+        )
     fun sendMessage(
         chatId: ChatId,
         senderId: UserId,
@@ -72,6 +78,11 @@ class ChatMessageService constructor(
     }
 
     @Transactional
+    @CacheEvict(
+        cacheNames = ["messages"],
+        key = "#chatId",
+
+        )
     fun deleteMessage(
         messageId: ChatMessageId,
         requestUserId: UserId
@@ -91,6 +102,16 @@ class ChatMessageService constructor(
                 messageId = messageId
             )
         )
+
+        evictMessagesCache(message.chatId)
+    }
+
+    @CacheEvict(
+        cacheNames = ["messages"],
+        key = "#chatId",
+    )
+    fun evictMessagesCache(chatId: ChatId) {
+        // NO-OP: Let Spring handle the cache evict
     }
 
 }

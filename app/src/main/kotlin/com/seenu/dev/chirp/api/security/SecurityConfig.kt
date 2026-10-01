@@ -1,4 +1,4 @@
-package com.seenu.dev.chirp.security
+package com.seenu.dev.chirp.api.security
 
 import com.seenu.dev.chirp.user.api.config.JwtAuthFilter
 import jakarta.servlet.DispatcherType
