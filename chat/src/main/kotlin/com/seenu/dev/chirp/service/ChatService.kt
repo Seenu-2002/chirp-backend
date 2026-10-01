@@ -59,6 +59,27 @@ class ChatService constructor(
             }
     }
 
+    fun getChatById(chatId: ChatId, requestUserId: UserId): Chat? {
+        return chatRepository.findChatById(chatId, requestUserId)
+            ?.toChat(lastMessageForChat(chatId))
+    }
+
+    fun findChatsByUser(userId: UserId): List<Chat> {
+        val chatEntities = chatRepository.findAllByUserId(userId)
+        val chatIds = chatEntities.mapNotNull { it.id }
+        val latestMessages = chatMessageRepository
+            .findLatestMessagesByChatIds(chatIds = chatIds.toSet())
+            .associateBy { it.chatId }
+
+        return chatEntities
+            .map {
+                it.toChat(
+                    lastMessage = latestMessages[it.id]?.toChatMessage()
+                )
+            }
+            .sortedByDescending { it.lastActivityAt }
+    }
+
     @Transactional
     fun createChat(
         creatorId: UserId,

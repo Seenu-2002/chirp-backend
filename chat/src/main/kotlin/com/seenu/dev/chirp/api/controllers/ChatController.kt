@@ -9,12 +9,14 @@ import com.seenu.dev.chirp.api.util.requestUserId
 import com.seenu.dev.chirp.domain.type.ChatId
 import com.seenu.dev.chirp.service.ChatService
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 
 @RestController("/api/chat")
@@ -37,6 +39,21 @@ class ChatController constructor(
             before = before,
             pageSize = pageSize
         )
+    }
+
+    @GetMapping("/{chatId}")
+    fun getChat(
+        @PathVariable("chatId") chatId: ChatId,
+    ): ChatDto {
+        return chatService.getChatById(
+            chatId = chatId,
+            requestUserId = requestUserId
+        )?.toChatDto() ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    }
+
+    @GetMapping("/{chatId}")
+    fun getChatsForUser(): List<ChatDto> {
+        return chatService.findChatsByUser(userId = requestUserId).map { it.toChatDto() }
     }
 
     @PostMapping
