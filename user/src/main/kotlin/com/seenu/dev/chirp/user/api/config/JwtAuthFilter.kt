@@ -1,7 +1,6 @@
 package com.seenu.dev.chirp.user.api.config
 
-import com.seenu.dev.chirp.user.service.JwtService
-import io.lettuce.core.KillArgs.Builder.user
+import com.seenu.dev.chirp.service.JwtService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

@@ -2,7 +2,7 @@ package com.seenu.dev.chirp.user.service
 
 import com.seenu.dev.chirp.domain.events.user.UserEvent
 import com.seenu.dev.chirp.infra.message_queue.EventPublisher
-import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
+import com.seenu.dev.chirp.domain.exception.InvalidTokenException
 import com.seenu.dev.chirp.user.domain.exceptions.UserNotFoundException
 import com.seenu.dev.chirp.user.domain.model.EmailVerificationToken
 import com.seenu.dev.chirp.user.infra.database.entity.EmailVerificationTokenEntity

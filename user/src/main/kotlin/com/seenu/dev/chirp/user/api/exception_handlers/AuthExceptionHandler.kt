@@ -2,7 +2,7 @@ package com.seenu.dev.chirp.user.api.exception_handlers
 
 import com.seenu.dev.chirp.user.domain.exceptions.EmailNotVerifiedException
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidCredentialException
-import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
+import com.seenu.dev.chirp.domain.exception.InvalidTokenException
 import com.seenu.dev.chirp.user.domain.exceptions.RateLimitException
 import com.seenu.dev.chirp.user.domain.exceptions.SamePasswordException
 import com.seenu.dev.chirp.domain.exception.UnauthorizedException

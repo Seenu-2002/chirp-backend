@@ -1,6 +1,6 @@
-package com.seenu.dev.chirp.user.service
+package com.seenu.dev.chirp.service
 
-import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
+import com.seenu.dev.chirp.domain.exception.InvalidTokenException
 import com.seenu.dev.chirp.domain.type.UserId
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
@@ -52,7 +52,7 @@ class JwtService constructor(
         return tokenType == "refresh"
     }
 
-    fun getUserIdFromToken(token: String): UserId? {
+    fun getUserIdFromToken(token: String): UserId {
         val claims = parseAllClaims(token) ?: throw InvalidTokenException("The attached JWT token is not valid")
         return UUID.fromString(claims.subject)
     }

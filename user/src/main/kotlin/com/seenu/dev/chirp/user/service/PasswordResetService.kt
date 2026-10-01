@@ -2,7 +2,7 @@ package com.seenu.dev.chirp.user.service
 
 import com.seenu.dev.chirp.domain.events.user.UserEvent
 import com.seenu.dev.chirp.user.domain.exceptions.InvalidCredentialException
-import com.seenu.dev.chirp.user.domain.exceptions.InvalidTokenException
+import com.seenu.dev.chirp.domain.exception.InvalidTokenException
 import com.seenu.dev.chirp.user.domain.exceptions.SamePasswordException
 import com.seenu.dev.chirp.user.domain.exceptions.UserNotFoundException
 import com.seenu.dev.chirp.domain.type.UserId
@@ -17,7 +17,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
