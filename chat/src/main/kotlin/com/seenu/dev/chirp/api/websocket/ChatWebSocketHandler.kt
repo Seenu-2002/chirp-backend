@@ -9,11 +9,13 @@ import com.seenu.dev.chirp.api.dto.ws.IncomingWebSocketMessage
 import com.seenu.dev.chirp.api.dto.ws.IncomingWebSocketMessageType
 import com.seenu.dev.chirp.api.dto.ws.OutgoingWebSocketMessage
 import com.seenu.dev.chirp.api.dto.ws.OutgoingWebSocketMessageType
+import com.seenu.dev.chirp.api.dto.ws.ProfilePictureUpdateDto
 import com.seenu.dev.chirp.api.dto.ws.SendMessageDto
 import com.seenu.dev.chirp.api.mappers.toChatMessageDto
 import com.seenu.dev.chirp.domain.event.ChatParticipantsJoinedEvent
 import com.seenu.dev.chirp.domain.event.ChatParticipantsLeftEvent
 import com.seenu.dev.chirp.domain.event.MessageDeletedEvent
+import com.seenu.dev.chirp.domain.event.ProfilePictureUpdatedEvent
 import com.seenu.dev.chirp.domain.type.ChatId
 import com.seenu.dev.chirp.domain.type.UserId
 import com.seenu.dev.chirp.service.ChatMessageService
@@ -297,6 +299,47 @@ class ChatWebSocketHandler constructor(
                 )
             )
         )
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    fun onProfilePictureUpdated(event: ProfilePictureUpdatedEvent) {
+        val userChats = connectionLock.read {
+            userChatIds[event.userId]?.toList() ?: emptyList()
+        }
+
+        val dto = ProfilePictureUpdateDto(
+            userId = event.userId,
+            newUrl = event.newUrl,
+        )
+
+        val sessionIds = mutableSetOf<String>()
+        userChats.forEach { chatId ->
+            connectionLock.read {
+                chatToSessions[chatId]?.forEach { session ->
+                    sessionIds.add(session)
+                }
+            }
+        }
+
+        val webSocketMessage = OutgoingWebSocketMessage(
+            type = OutgoingWebSocketMessageType.PROFILE_PICTURE_UPDATED,
+            payload = objectMapper.writeValueAsString(dto)
+        )
+
+        val messageJson = objectMapper.writeValueAsString(webSocketMessage)
+
+        sessionIds.forEach { sessionId ->
+            val userSession = connectionLock.read {
+                sessions[sessionId]
+            } ?: return@forEach
+            try {
+                if (userSession.session.isOpen) {
+                    userSession.session.sendMessage(TextMessage(messageJson))
+                }
+            } catch (exp: Exception) {
+                logger.error("Could not send profile picture update to session $sessionId", exp)
+            }
+        }
     }
 
     private fun sendError(
