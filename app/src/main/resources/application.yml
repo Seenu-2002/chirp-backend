@@ -113,6 +113,12 @@ chirp:
   rate-limit:
     ip:
       apply-limit: true
+  web-socket:
+    allowed-origin: "http://localhost:8080"
+
+logging:
+  level:
+    com.seenu.dev.chirp: DEBUG
 
 nginx:
   trusted-ips:
