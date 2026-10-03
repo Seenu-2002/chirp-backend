@@ -16,7 +16,6 @@ class SupabaseRestClientConfig constructor(
         return RestClient.builder()
             .baseUrl(supabaseUrl)
             .defaultHeader("Authorization", "Bearer $supabaseUrl")
-            .defaultHeader("Content-Type", "application/json")
             .build()
     }
 

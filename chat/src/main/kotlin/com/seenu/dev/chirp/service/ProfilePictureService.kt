@@ -2,12 +2,13 @@ package com.seenu.dev.chirp.service
 
 import com.seenu.dev.chirp.domain.event.ProfilePictureUpdatedEvent
 import com.seenu.dev.chirp.domain.exception.ChatParticipantNotFoundException
+import com.seenu.dev.chirp.domain.exception.InvalidProfilePictureException
 import com.seenu.dev.chirp.domain.models.ProfilePictureUploadCredentials
 import com.seenu.dev.chirp.domain.type.UserId
 import com.seenu.dev.chirp.infra.database.repositories.ChatParticipantRepository
 import com.seenu.dev.chirp.infra.storage.SupabaseStorageService
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -17,7 +18,8 @@ import org.springframework.transaction.annotation.Transactional
 class ProfilePictureService constructor(
     private val supabaseStorageService: SupabaseStorageService,
     private val chatParticipantRepository: ChatParticipantRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    @param:Value("\${supbase.url}") private val supabaseUrl: String,
 ) {
 
     private val logger = LoggerFactory.getLogger(ProfilePictureService::class.java)
@@ -58,6 +60,10 @@ class ProfilePictureService constructor(
         userId: UserId,
         publicUrl: String
     ) {
+        if (!publicUrl.startsWith(supabaseUrl)) {
+            throw InvalidProfilePictureException("Invalid profile picture url")
+        }
+
         val participant = chatParticipantRepository.findByIdOrNull(userId)
             ?: throw ChatParticipantNotFoundException(userId)
 

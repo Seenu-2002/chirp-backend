@@ -129,5 +129,5 @@ nginx:
   require-proxy: true
 
 supabase:
-  url: "db.cdacjphgjjonftsjjpzm.supabase.co"
+  url: "https://cdacjphgjjonftsjjpzm.supabase.co"
   service-key: ${SUPABASE_SERVICE_KEY}

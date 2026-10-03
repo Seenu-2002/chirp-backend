@@ -77,6 +77,7 @@ class SupabaseStorageService constructor(
         val response = supabaseRestClient
             .post()
             .uri("/storage/v1/objects/upload/sign/$path")
+            .header("Content-Type", "application/json")
             .body(json)
             .retrieve()
             .body(SignedUploadResponse::class.java)
